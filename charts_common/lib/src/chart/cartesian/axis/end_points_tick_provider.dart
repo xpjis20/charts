@@ -52,15 +52,7 @@ class EndPointsTickProvider<D> extends BaseTickProvider<D> {
     // infinity.
     if (scale.domainStepSize.abs() != double.infinity) {
       List<D> position = _getPositionValue(tickHint, scale);
-      //
-      //final start = _getStartValue(tickHint, scale);
-
-      // final middle = _getmiddleValue(tickHint, scale);
-
-      //final end = _getEndValue(tickHint, scale);
-
-      // final labels = formatter.format([start, middle, end], formatterValueCache,
-      //     stepSize: scale.domainStepSize);
+    
       final labels = formatter.format(position, formatterValueCache,
           stepSize: scale.domainStepSize);
 
