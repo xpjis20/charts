@@ -27,8 +27,11 @@ import 'tick_formatter.dart' show TickFormatter;
 import 'tick_provider.dart' show BaseTickProvider, TickHint;
 import 'time/date_time_scale.dart' show DateTimeScale;
 
+
 /// Tick provider that provides ticks at the two end points of the axis range.
 class EndPointsTickProvider<D> extends BaseTickProvider<D> {
+  final int domainproviderTickCount;
+  const EndPointsTickProvider({this.domainproviderTickCount});
   @override
   List<Tick<D>> getTicks({
     @required ChartContext context,
@@ -48,27 +51,55 @@ class EndPointsTickProvider<D> extends BaseTickProvider<D> {
     // An un-configured axis has no domain step size, and its scale defaults to
     // infinity.
     if (scale.domainStepSize.abs() != double.infinity) {
-      final start = _getStartValue(tickHint, scale);
-      final end = _getEndValue(tickHint, scale);
+      List<D> position = _getPositionValue(tickHint, scale);
+      //
+      //final start = _getStartValue(tickHint, scale);
 
-      final labels = formatter.format([start, end], formatterValueCache,
+      // final middle = _getmiddleValue(tickHint, scale);
+
+      //final end = _getEndValue(tickHint, scale);
+
+      // final labels = formatter.format([start, middle, end], formatterValueCache,
+      //     stepSize: scale.domainStepSize);
+      final labels = formatter.format(position, formatterValueCache,
           stepSize: scale.domainStepSize);
 
-      ticks.add(Tick(
-          value: start,
-          textElement: graphicsFactory.createTextElement(labels[0]),
-          locationPx: scale[start]));
+      for (int i = 0; i < 11; i++) {
+        ticks.add(Tick(
+            value: position[i],
+            textElement: graphicsFactory.createTextElement(labels[i]),
+            locationPx: scale[position[i]]));
+      }
+      // ticks.add(Tick(
+      //     value: middle,
+      //     textElement: graphicsFactory.createTextElement(labels[1]),
+      //     locationPx: scale[middle]));
+      //locationPx: 100));
 
-      ticks.add(Tick(
-          value: end,
-          textElement: graphicsFactory.createTextElement(labels[1]),
-          locationPx: scale[end]));
+      // ticks.add(Tick(
+      //     value: end,
+      //     textElement: graphicsFactory.createTextElement(labels[2]),
+      //     locationPx: scale[end]));
 
       // Allow draw strategy to decorate the ticks.
       tickDrawStrategy.decorateTicks(ticks);
     }
 
     return ticks;
+  }
+
+// 10칸으로 나누어표시함, 임시
+  List<D> _getPositionValue(TickHint<D> tickHint, MutableScale<D> scale) {
+    List<D> positionValue = new List<D>();
+    //int timeseconds = 120;
+    for (int i = 11; i > 0; i--) {
+      Object value;
+      value = (scale as DateTimeScale).viewportDomain.end.subtract(
+          Duration(seconds: (this.domainproviderTickCount ~/ 11) * i));
+      //Duration(seconds: ( ~/ 11) * i));
+      positionValue.add(value);
+    }
+    return positionValue;
   }
 
   /// Get the start value from the scale.
